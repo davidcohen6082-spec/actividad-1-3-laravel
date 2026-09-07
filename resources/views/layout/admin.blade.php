@@ -34,23 +34,29 @@
         <div class="h-full px-3 pb-4 overflow-y-auto">
             <ul class="space-y-1 font-medium">
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Inicio</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.roles.index') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.roles.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Roles</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.usuarios.index') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.usuarios.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Usuarios</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.productos.index') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.productos.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Productos</a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.logs.index') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.logs.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Logs / Métricas</a>
-                </li>
-                <li class="pt-3 mt-3 border-t border-gray-200">
-                    <a href="{{ route('admin.contacto') }}" class="flex items-center p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.contacto') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">Contacto</a>
-                </li>
+    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.roles.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+        <a href="{{ route('admin.roles.index') }}" class="flex-1">Roles</a>
+        <a href="{{ route('admin.roles.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+    </div>
+</li>
+<li>
+    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.usuarios.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+        <a href="{{ route('admin.usuarios.index') }}" class="flex-1">Usuarios</a>
+        <a href="{{ route('admin.usuarios.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+    </div>
+</li>
+<li>
+    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.productos.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+        <a href="{{ route('admin.productos.index') }}" class="flex-1">Productos</a>
+        <a href="{{ route('admin.productos.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+    </div>
+</li>
+<li>
+    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.logs.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+        <a href="{{ route('admin.logs.index') }}" class="flex-1">Logs / Métricas</a>
+        <a href="{{ route('admin.logs.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+    </div>
+</li>
             </ul>
         </div>
     </aside>
