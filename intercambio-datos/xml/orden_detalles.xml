@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orden_detalles>
+    <orden_detalle>
+        <id>1</id>
+        <orden>
+            <id>1</id>
+            <estado>completada</estado>
+        </orden>
+        <producto>
+            <id>1</id>
+            <nombre>Camisa azul talla M</nombre>
+        </producto>
+        <cantidad>1</cantidad>
+        <precio_unitario>50.00</precio_unitario>
+    </orden_detalle>
+    <orden_detalle>
+        <id>2</id>
+        <orden>
+            <id>1</id>
+            <estado>completada</estado>
+        </orden>
+        <producto>
+            <id>3</id>
+            <nombre>Zapatos deportivos talla 26</nombre>
+        </producto>
+        <cantidad>1</cantidad>
+        <precio_unitario>180.00</precio_unitario>
+    </orden_detalle>
+    <orden_detalle>
+        <id>3</id>
+        <orden>
+            <id>2</id>
+            <estado>pendiente</estado>
+        </orden>
+        <producto>
+            <id>2</id>
+            <nombre>Pantalón de mezclilla talla 32</nombre>
+        </producto>
+        <cantidad>1</cantidad>
+        <precio_unitario>80.00</precio_unitario>
+    </orden_detalle>
+</orden_detalles>

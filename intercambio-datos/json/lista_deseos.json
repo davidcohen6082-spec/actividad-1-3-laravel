@@ -1,0 +1,22 @@
+{
+  "lista_deseos": [
+    {
+      "id": 1,
+      "usuario": { "id": 1, "nombre": "Ana Pérez" },
+      "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32", "precio": 80.00 },
+      "fecha_agregado": "2026-08-10"
+    },
+    {
+      "id": 2,
+      "usuario": { "id": 1, "nombre": "Ana Pérez" },
+      "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26", "precio": 180.00 },
+      "fecha_agregado": "2026-08-12"
+    },
+    {
+      "id": 3,
+      "usuario": { "id": 3, "nombre": "Marta Ruiz" },
+      "producto": { "id": 1, "nombre": "Camisa azul talla M", "precio": 50.00 },
+      "fecha_agregado": "2026-08-05"
+    }
+  ]
+}

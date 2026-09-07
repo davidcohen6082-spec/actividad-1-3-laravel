@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<categorias>
+    <categoria>
+        <id>1</id>
+        <nombre>Camisas</nombre>
+        <productos>
+            <producto>
+                <id>1</id>
+                <nombre>Camisa azul talla M</nombre>
+            </producto>
+        </productos>
+    </categoria>
+    <categoria>
+        <id>2</id>
+        <nombre>Pantalones</nombre>
+        <productos>
+            <producto>
+                <id>2</id>
+                <nombre>Pantalón de mezclilla talla 32</nombre>
+            </producto>
+        </productos>
+    </categoria>
+    <categoria>
+        <id>3</id>
+        <nombre>Calzado</nombre>
+        <productos>
+            <producto>
+                <id>3</id>
+                <nombre>Zapatos deportivos talla 26</nombre>
+            </producto>
+        </productos>
+    </categoria>
+</categorias>

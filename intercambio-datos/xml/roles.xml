@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<roles>
+    <rol>
+        <id>1</id>
+        <nombre>administrador</nombre>
+        <usuarios>
+            <usuario>
+                <id>2</id>
+                <nombre>Luis Gómez</nombre>
+            </usuario>
+        </usuarios>
+    </rol>
+    <rol>
+        <id>2</id>
+        <nombre>cliente</nombre>
+        <usuarios>
+            <usuario>
+                <id>1</id>
+                <nombre>Ana Pérez</nombre>
+            </usuario>
+            <usuario>
+                <id>3</id>
+                <nombre>Marta Ruiz</nombre>
+            </usuario>
+        </usuarios>
+    </rol>
+    <rol>
+        <id>3</id>
+        <nombre>moderador</nombre>
+        <usuarios/>
+    </rol>
+</roles>

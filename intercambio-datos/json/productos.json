@@ -1,0 +1,37 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Camisa azul talla M",
+      "descripcion": "Camisa de vestir azul, talla M, poco uso",
+      "talla": "M",
+      "condicion": "usado",
+      "precio": 50.00,
+      "stock": 1,
+      "categoria": { "id": 1, "nombre": "Camisas" },
+      "publicado_por": { "id": 2, "nombre": "Luis Gómez" }
+    },
+    {
+      "id": 2,
+      "nombre": "Pantalón de mezclilla talla 32",
+      "descripcion": "Pantalón de mezclilla azul, talla 32",
+      "talla": "32",
+      "condicion": "usado",
+      "precio": 80.00,
+      "stock": 2,
+      "categoria": { "id": 2, "nombre": "Pantalones" },
+      "publicado_por": { "id": 2, "nombre": "Luis Gómez" }
+    },
+    {
+      "id": 3,
+      "nombre": "Zapatos deportivos talla 26",
+      "descripcion": "Zapatos deportivos blancos, talla 26, nuevos",
+      "talla": "26",
+      "condicion": "nuevo",
+      "precio": 180.00,
+      "stock": 1,
+      "categoria": { "id": 3, "nombre": "Calzado" },
+      "publicado_por": { "id": 2, "nombre": "Luis Gómez" }
+    }
+  ]
+}

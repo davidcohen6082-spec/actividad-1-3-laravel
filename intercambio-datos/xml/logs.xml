@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<logs>
+    <log>
+        <id>1</id>
+        <usuario>
+            <id>2</id>
+            <nombre>Luis Gómez</nombre>
+        </usuario>
+        <accion>Publicó un nuevo producto</accion>
+        <fecha>2026-08-15</fecha>
+    </log>
+    <log>
+        <id>2</id>
+        <usuario>
+            <id>1</id>
+            <nombre>Ana Pérez</nombre>
+        </usuario>
+        <accion>Completó una orden</accion>
+        <fecha>2026-08-20</fecha>
+    </log>
+    <log>
+        <id>3</id>
+        <usuario>
+            <id>3</id>
+            <nombre>Marta Ruiz</nombre>
+        </usuario>
+        <accion>Agregó un producto a favoritos</accion>
+        <fecha>2026-08-22</fecha>
+    </log>
+</logs>

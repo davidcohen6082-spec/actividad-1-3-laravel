@@ -1,0 +1,58 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "Ana Pérez",
+      "email": "ana@correo.com",
+      "proveedor_social": null,
+      "fecha_registro": "2026-07-01",
+      "rol": { "id": 2, "nombre": "cliente" },
+      "carrito": {
+        "id": 1,
+        "items": [
+          { "producto": { "id": 1, "nombre": "Camisa azul talla M", "precio": 50.00 }, "cantidad": 1 },
+          { "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26", "precio": 180.00 }, "cantidad": 1 }
+        ]
+      },
+      "lista_deseos": [
+        { "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32", "precio": 80.00 }, "fecha_agregado": "2026-08-10" },
+        { "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26", "precio": 180.00 }, "fecha_agregado": "2026-08-12" }
+      ],
+      "ordenes": [
+        { "id": 1, "estado": "completada", "total": 230.00, "fecha": "2026-08-20" },
+        { "id": 3, "estado": "completada", "total": 180.00, "fecha": "2026-08-28" }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Luis Gómez",
+      "email": "luis@correo.com",
+      "proveedor_social": "google",
+      "fecha_registro": "2026-06-15",
+      "rol": { "id": 1, "nombre": "administrador" },
+      "carrito": { "id": 3, "items": [] },
+      "lista_deseos": [],
+      "ordenes": []
+    },
+    {
+      "id": 3,
+      "nombre": "Marta Ruiz",
+      "email": "marta@correo.com",
+      "proveedor_social": null,
+      "fecha_registro": "2026-07-20",
+      "rol": { "id": 2, "nombre": "cliente" },
+      "carrito": {
+        "id": 2,
+        "items": [
+          { "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32", "precio": 80.00 }, "cantidad": 2 }
+        ]
+      },
+      "lista_deseos": [
+        { "producto": { "id": 1, "nombre": "Camisa azul talla M", "precio": 50.00 }, "fecha_agregado": "2026-08-05" }
+      ],
+      "ordenes": [
+        { "id": 2, "estado": "pendiente", "total": 80.00, "fecha": "2026-08-25" }
+      ]
+    }
+  ]
+}

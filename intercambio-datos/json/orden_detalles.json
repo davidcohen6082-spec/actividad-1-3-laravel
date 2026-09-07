@@ -1,0 +1,25 @@
+{
+  "orden_detalles": [
+    {
+      "id": 1,
+      "orden": { "id": 1, "estado": "completada" },
+      "producto": { "id": 1, "nombre": "Camisa azul talla M" },
+      "cantidad": 1,
+      "precio_unitario": 50.00
+    },
+    {
+      "id": 2,
+      "orden": { "id": 1, "estado": "completada" },
+      "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26" },
+      "cantidad": 1,
+      "precio_unitario": 180.00
+    },
+    {
+      "id": 3,
+      "orden": { "id": 2, "estado": "pendiente" },
+      "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32" },
+      "cantidad": 1,
+      "precio_unitario": 80.00
+    }
+  ]
+}

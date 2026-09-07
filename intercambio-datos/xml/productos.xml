@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<productos>
+    <producto>
+        <id>1</id>
+        <nombre>Camisa azul talla M</nombre>
+        <descripcion>Camisa de vestir azul, talla M, poco uso</descripcion>
+        <talla>M</talla>
+        <condicion>usado</condicion>
+        <precio>50.00</precio>
+        <stock>1</stock>
+        <categoria>
+            <id>1</id>
+            <nombre>Camisas</nombre>
+        </categoria>
+        <publicado_por>
+            <id>2</id>
+            <nombre>Luis Gómez</nombre>
+        </publicado_por>
+    </producto>
+    <producto>
+        <id>2</id>
+        <nombre>Pantalón de mezclilla talla 32</nombre>
+        <descripcion>Pantalón de mezclilla azul, talla 32</descripcion>
+        <talla>32</talla>
+        <condicion>usado</condicion>
+        <precio>80.00</precio>
+        <stock>2</stock>
+        <categoria>
+            <id>2</id>
+            <nombre>Pantalones</nombre>
+        </categoria>
+        <publicado_por>
+            <id>2</id>
+            <nombre>Luis Gómez</nombre>
+        </publicado_por>
+    </producto>
+    <producto>
+        <id>3</id>
+        <nombre>Zapatos deportivos talla 26</nombre>
+        <descripcion>Zapatos deportivos blancos, talla 26, nuevos</descripcion>
+        <talla>26</talla>
+        <condicion>nuevo</condicion>
+        <precio>180.00</precio>
+        <stock>1</stock>
+        <categoria>
+            <id>3</id>
+            <nombre>Calzado</nombre>
+        </categoria>
+        <publicado_por>
+            <id>2</id>
+            <nombre>Luis Gómez</nombre>
+        </publicado_por>
+    </producto>
+</productos>

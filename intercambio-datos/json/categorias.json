@@ -1,0 +1,25 @@
+{
+  "categorias": [
+    {
+      "id": 1,
+      "nombre": "Camisas",
+      "productos": [
+        { "id": 1, "nombre": "Camisa azul talla M" }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Pantalones",
+      "productos": [
+        { "id": 2, "nombre": "Pantalón de mezclilla talla 32" }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Calzado",
+      "productos": [
+        { "id": 3, "nombre": "Zapatos deportivos talla 26" }
+      ]
+    }
+  ]
+}

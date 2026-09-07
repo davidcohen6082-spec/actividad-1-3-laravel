@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<carritos>
+    <carrito>
+        <id>1</id>
+        <usuario>
+            <id>1</id>
+            <nombre>Ana Pérez</nombre>
+        </usuario>
+        <items>
+            <item>
+                <producto>
+                    <id>1</id>
+                    <nombre>Camisa azul talla M</nombre>
+                    <precio>50.00</precio>
+                </producto>
+                <cantidad>1</cantidad>
+            </item>
+            <item>
+                <producto>
+                    <id>3</id>
+                    <nombre>Zapatos deportivos talla 26</nombre>
+                    <precio>180.00</precio>
+                </producto>
+                <cantidad>1</cantidad>
+            </item>
+        </items>
+    </carrito>
+    <carrito>
+        <id>2</id>
+        <usuario>
+            <id>3</id>
+            <nombre>Marta Ruiz</nombre>
+        </usuario>
+        <items>
+            <item>
+                <producto>
+                    <id>2</id>
+                    <nombre>Pantalón de mezclilla talla 32</nombre>
+                    <precio>80.00</precio>
+                </producto>
+                <cantidad>2</cantidad>
+            </item>
+        </items>
+    </carrito>
+    <carrito>
+        <id>3</id>
+        <usuario>
+            <id>2</id>
+            <nombre>Luis Gómez</nombre>
+        </usuario>
+        <items/>
+    </carrito>
+</carritos>

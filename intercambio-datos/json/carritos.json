@@ -1,0 +1,24 @@
+{
+  "carritos": [
+    {
+      "id": 1,
+      "usuario": { "id": 1, "nombre": "Ana Pérez" },
+      "items": [
+        { "producto": { "id": 1, "nombre": "Camisa azul talla M", "precio": 50.00 }, "cantidad": 1 },
+        { "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26", "precio": 180.00 }, "cantidad": 1 }
+      ]
+    },
+    {
+      "id": 2,
+      "usuario": { "id": 3, "nombre": "Marta Ruiz" },
+      "items": [
+        { "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32", "precio": 80.00 }, "cantidad": 2 }
+      ]
+    },
+    {
+      "id": 3,
+      "usuario": { "id": 2, "nombre": "Luis Gómez" },
+      "items": []
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "ordenes": [
+    {
+      "id": 1,
+      "usuario": { "id": 1, "nombre": "Ana Pérez" },
+      "estado": "completada",
+      "total": 230.00,
+      "fecha": "2026-08-20",
+      "detalle": [
+        { "producto": { "id": 1, "nombre": "Camisa azul talla M" }, "cantidad": 1, "precio_unitario": 50.00 },
+        { "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26" }, "cantidad": 1, "precio_unitario": 180.00 }
+      ]
+    },
+    {
+      "id": 2,
+      "usuario": { "id": 3, "nombre": "Marta Ruiz" },
+      "estado": "pendiente",
+      "total": 80.00,
+      "fecha": "2026-08-25",
+      "detalle": [
+        { "producto": { "id": 2, "nombre": "Pantalón de mezclilla talla 32" }, "cantidad": 1, "precio_unitario": 80.00 }
+      ]
+    },
+    {
+      "id": 3,
+      "usuario": { "id": 1, "nombre": "Ana Pérez" },
+      "estado": "completada",
+      "total": 180.00,
+      "fecha": "2026-08-28",
+      "detalle": [
+        { "producto": { "id": 3, "nombre": "Zapatos deportivos talla 26" }, "cantidad": 1, "precio_unitario": 180.00 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "roles": [
+    {
+      "id": 1,
+      "nombre": "administrador",
+      "usuarios": [
+        { "id": 2, "nombre": "Luis Gómez" }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "cliente",
+      "usuarios": [
+        { "id": 1, "nombre": "Ana Pérez" },
+        { "id": 3, "nombre": "Marta Ruiz" }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "moderador",
+      "usuarios": []
+    }
+  ]
+}

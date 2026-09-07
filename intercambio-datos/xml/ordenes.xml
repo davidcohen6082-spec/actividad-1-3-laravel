@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ordenes>
+    <orden>
+        <id>1</id>
+        <usuario>
+            <id>1</id>
+            <nombre>Ana Pérez</nombre>
+        </usuario>
+        <estado>completada</estado>
+        <total>230.00</total>
+        <fecha>2026-08-20</fecha>
+        <detalle>
+            <item>
+                <producto>
+                    <id>1</id>
+                    <nombre>Camisa azul talla M</nombre>
+                </producto>
+                <cantidad>1</cantidad>
+                <precio_unitario>50.00</precio_unitario>
+            </item>
+            <item>
+                <producto>
+                    <id>3</id>
+                    <nombre>Zapatos deportivos talla 26</nombre>
+                </producto>
+                <cantidad>1</cantidad>
+                <precio_unitario>180.00</precio_unitario>
+            </item>
+        </detalle>
+    </orden>
+    <orden>
+        <id>2</id>
+        <usuario>
+            <id>3</id>
+            <nombre>Marta Ruiz</nombre>
+        </usuario>
+        <estado>pendiente</estado>
+        <total>80.00</total>
+        <fecha>2026-08-25</fecha>
+        <detalle>
+            <item>
+                <producto>
+                    <id>2</id>
+                    <nombre>Pantalón de mezclilla talla 32</nombre>
+                </producto>
+                <cantidad>1</cantidad>
+                <precio_unitario>80.00</precio_unitario>
+            </item>
+        </detalle>
+    </orden>
+    <orden>
+        <id>3</id>
+        <usuario>
+            <id>1</id>
+            <nombre>Ana Pérez</nombre>
+        </usuario>
+        <estado>completada</estado>
+        <total>180.00</total>
+        <fecha>2026-08-28</fecha>
+        <detalle>
+            <item>
+                <producto>
+                    <id>3</id>
+                    <nombre>Zapatos deportivos talla 26</nombre>
+                </producto>
+                <cantidad>1</cantidad>
+                <precio_unitario>180.00</precio_unitario>
+            </item>
+        </detalle>
+    </orden>
+</ordenes>
