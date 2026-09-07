@@ -20,6 +20,7 @@ Route::get('/cliente', function () {
 
 Route::view('/plantilla','/layout/app');
 Route::view('/catalogo','/catalogo/mascotas');
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/', 'admin.dashboard')->name('dashboard');
     Route::view('/contacto', 'admin.contacto')->name('contacto');
