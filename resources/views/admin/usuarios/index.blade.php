@@ -17,29 +17,21 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">1</td>
-                <td class="px-6 py-4">Ana Pérez</td>
-                <td class="px-6 py-4">ana@correo.com</td>
-                <td class="px-6 py-4">Cliente</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="{{ route('admin.usuarios.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">2</td>
-                <td class="px-6 py-4">Luis Gómez</td>
-                <td class="px-6 py-4">luis@correo.com</td>
-                <td class="px-6 py-4">Administrador</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="{{ route('admin.usuarios.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
+            @foreach ($usuarios as $usuario)
+                <tr class="bg-white border-b">
+                    <td class="px-6 py-4">{{ $usuario->id }}</td>
+                    <td class="px-6 py-4">{{ $usuario->nombre }}</td>
+                    <td class="px-6 py-4">{{ $usuario->email }}</td>
+                    <td class="px-6 py-4">{{ $usuario->rol->nombre ?? 'Sin rol' }}</td>
+                    <td class="px-6 py-4 space-x-2">
+                        <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
+                        <a href="{{ route('admin.usuarios.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
+                        <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
+                    </td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 </div>
+<div class="mt-4">{{ $usuarios->links() }}</div>
 @endsection

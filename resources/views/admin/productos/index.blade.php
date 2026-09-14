@@ -12,37 +12,30 @@
                 <th class="px-6 py-3">ID</th>
                 <th class="px-6 py-3">Nombre</th>
                 <th class="px-6 py-3">Categoría</th>
+                <th class="px-6 py-3">Publicado por</th>
                 <th class="px-6 py-3">Precio</th>
                 <th class="px-6 py-3">Stock</th>
                 <th class="px-6 py-3">Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">1</td>
-                <td class="px-6 py-4">Camisa azul talla M</td>
-                <td class="px-6 py-4">Camisas</td>
-                <td class="px-6 py-4">$50.00</td>
-                <td class="px-6 py-4">1</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="{{ route('admin.productos.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">2</td>
-                <td class="px-6 py-4">Zapatos deportivos talla 26</td>
-                <td class="px-6 py-4">Calzado</td>
-                <td class="px-6 py-4">$180.00</td>
-                <td class="px-6 py-4">2</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="{{ route('admin.productos.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
+            @foreach ($productos as $producto)
+                <tr class="bg-white border-b">
+                    <td class="px-6 py-4">{{ $producto->id }}</td>
+                    <td class="px-6 py-4">{{ $producto->nombre }}</td>
+                    <td class="px-6 py-4">{{ $producto->categoria->nombre ?? 'Sin categoría' }}</td>
+                    <td class="px-6 py-4">{{ $producto->usuario->nombre ?? 'Desconocido' }}</td>
+                    <td class="px-6 py-4">${{ number_format($producto->precio, 2) }}</td>
+                    <td class="px-6 py-4">{{ $producto->stock }}</td>
+                    <td class="px-6 py-4 space-x-2">
+                        <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
+                        <a href="{{ route('admin.productos.form') }}" class="font-medium text-yellow-600 hover:underline">Editar</a>
+                        <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
+                    </td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 </div>
+<div class="mt-4">{{ $productos->links() }}</div>
 @endsection

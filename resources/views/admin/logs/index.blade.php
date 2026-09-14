@@ -17,27 +17,20 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">1</td>
-                <td class="px-6 py-4">Luis Gómez</td>
-                <td class="px-6 py-4">Publicó un nuevo producto</td>
-                <td class="px-6 py-4">2026-09-01</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
-            <tr class="bg-white border-b">
-                <td class="px-6 py-4">2</td>
-                <td class="px-6 py-4">Ana Pérez</td>
-                <td class="px-6 py-4">Completó una orden</td>
-                <td class="px-6 py-4">2026-09-02</td>
-                <td class="px-6 py-4 space-x-2">
-                    <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
-                    <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
-                </td>
-            </tr>
+            @foreach ($logs as $log)
+                <tr class="bg-white border-b">
+                    <td class="px-6 py-4">{{ $log->id }}</td>
+                    <td class="px-6 py-4">{{ $log->usuario->nombre ?? 'Desconocido' }}</td>
+                    <td class="px-6 py-4">{{ $log->accion }}</td>
+                    <td class="px-6 py-4">{{ \Illuminate\Support\Carbon::parse($log->fecha)->format('Y-m-d') }}</td>
+                    <td class="px-6 py-4 space-x-2">
+                        <a href="#" class="font-medium text-blue-600 hover:underline">Consultar</a>
+                        <a href="#" class="font-medium text-red-600 hover:underline">Eliminar</a>
+                    </td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 </div>
+<div class="mt-4">{{ $logs->links() }}</div>
 @endsection
