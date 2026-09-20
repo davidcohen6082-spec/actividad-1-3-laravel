@@ -62,9 +62,29 @@
     </aside>
 
     {{-- ÁREA DE CONTENIDO --}}
+    
     <div class="p-4 lg:ml-64 pt-24">
+                @if (session('success'))
+            <div class="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-300" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-300" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-300" role="alert">
+                <p class="font-medium mb-1">Se encontraron los siguientes errores:</p>
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @yield('contenido')
-
         {{-- PIE DE PÁGINA --}}
         <footer class="mt-8 py-4 border-t border-gray-200 text-center text-sm text-gray-500">
             © {{ date('Y') }} Sistema de Bancos de Ropa — Panel Administrativo

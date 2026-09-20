@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuario extends Model
 {
-    protected $fillable = ['rol_id', 'nombre', 'email', 'password_hash', 'proveedor_social', 'social_id', 'fecha_registro'];
+    protected $fillable = ['rol_id', 'nombre', 'email', 'password_hash', 'proveedor_social', 'social_id', 'fecha_registro','foto'];
 
 public function rol() { return $this->belongsTo(Rol::class); }
 public function productos() { return $this->hasMany(Producto::class); }

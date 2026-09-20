@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
 {
-    protected $fillable = ['usuario_id', 'accion', 'fecha'];
+    protected $fillable = ['usuario_id', 'accion', 'fecha', 'critico'];
 
 public function usuario() { return $this->belongsTo(Usuario::class); }
 }

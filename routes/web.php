@@ -30,14 +30,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/contacto', 'admin.contacto')->name('contacto');
 
     Route::get('/roles', [RolController::class, 'index'])->name('roles.index');
-    Route::view('/roles/nuevo', 'admin.roles.form')->name('roles.form');
+    Route::get('/roles/nuevo', [RolController::class, 'create'])->name('roles.form');
+    Route::post('/roles', [RolController::class, 'store'])->name('roles.store');
 
     Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-    Route::view('/usuarios/nuevo', 'admin.usuarios.form')->name('usuarios.form');
+    Route::get('/usuarios/nuevo', [UsuarioController::class, 'create'])->name('usuarios.form');
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
 
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
-    Route::view('/productos/nuevo', 'admin.productos.form')->name('productos.form');
+    Route::get('/productos/nuevo', [ProductoController::class, 'create'])->name('productos.form');
+    Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
 
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
-    Route::view('/logs/nuevo', 'admin.logs.form')->name('logs.form');
+    Route::get('/logs/nuevo', [LogController::class, 'create'])->name('logs.form');
+    Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
 });
