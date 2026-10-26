@@ -9,13 +9,10 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\AdminAuthController;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/admin', function () {
-    return view('admin');
 });
 
 Route::get('/cliente', function () {
@@ -25,7 +22,11 @@ Route::get('/cliente', function () {
 Route::view('/plantilla','/layout/app');
 Route::view('/catalogo','/catalogo/mascotas');
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::get('/admin/login', [AdminAuthController::class, 'mostrarLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     Route::view('/', 'admin.dashboard')->name('dashboard');
     Route::view('/contacto', 'admin.contacto')->name('contacto');
 
