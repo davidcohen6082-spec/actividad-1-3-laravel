@@ -6,6 +6,8 @@ use App\Models\Rol;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class UsuarioController extends Controller
 {
@@ -17,12 +19,20 @@ class UsuarioController extends Controller
 
     public function create()
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $roles = Rol::orderBy('nombre')->get();
         return view('admin.usuarios.form', ['usuario' => null, 'roles' => $roles]);
     }
 
     public function store(Request $request)
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $request->merge(['proveedor_social' => $request->proveedor_social ?: null]);
 
         $validated = $request->validate([
@@ -61,6 +71,10 @@ class UsuarioController extends Controller
 
     public function edit($id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $usuario = Usuario::find($id);
 
         if (!$usuario) {
@@ -73,6 +87,10 @@ class UsuarioController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $usuario = Usuario::find($id);
 
         if (!$usuario) {
@@ -104,6 +122,10 @@ class UsuarioController extends Controller
 
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros.');
+        }
+
         $usuario = Usuario::find($id);
 
         if (!$usuario) {
@@ -123,6 +145,10 @@ class UsuarioController extends Controller
 
     public function restaurar($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para restaurar registros.');
+        }
+
         $usuario = Usuario::onlyTrashed()->find($id);
 
         if (!$usuario) {
@@ -136,6 +162,10 @@ class UsuarioController extends Controller
 
     public function forceDestroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros de forma definitiva.');
+        }
+
         $usuario = Usuario::onlyTrashed()->find($id);
 
         if (!$usuario) {

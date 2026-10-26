@@ -48,6 +48,73 @@
     <aside id="sidebar" class="fixed top-0 left-0 z-20 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 lg:translate-x-0" aria-label="Sidebar">
         <div class="h-full px-3 pb-4 overflow-y-auto">
             <ul class="space-y-1 font-medium">
-                <li>
-    <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.roles.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
-        <a href="{{ route('admin.roles.index') }}"
+                @can('ver-registros', Auth::guard('admin')->user())
+                    <li>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.roles.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+                            <a href="{{ route('admin.roles.index') }}" class="flex-1">Roles</a>
+                            @can('crear-registros', Auth::guard('admin')->user())
+                                <a href="{{ route('admin.roles.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+                            @endcan
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.usuarios.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+                            <a href="{{ route('admin.usuarios.index') }}" class="flex-1">Usuarios</a>
+                            @can('crear-registros', Auth::guard('admin')->user())
+                                <a href="{{ route('admin.usuarios.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+                            @endcan
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.productos.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+                            <a href="{{ route('admin.productos.index') }}" class="flex-1">Productos</a>
+                            @can('crear-registros', Auth::guard('admin')->user())
+                                <a href="{{ route('admin.productos.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+                            @endcan
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.logs.*') ? 'bg-gray-100 font-semibold' : 'text-gray-900' }}">
+                            <a href="{{ route('admin.logs.index') }}" class="flex-1">Logs / Métricas</a>
+                            @can('crear-registros', Auth::guard('admin')->user())
+                                <a href="{{ route('admin.logs.form') }}" class="text-xs text-indigo-600 hover:underline ml-2">+ Nuevo</a>
+                            @endcan
+                        </div>
+                    </li>
+                @endcan
+            </ul>
+        </div>
+    </aside>
+
+    {{-- ÁREA DE CONTENIDO --}}
+
+    <div class="p-4 lg:ml-64 pt-24">
+                @if (session('success'))
+            <div class="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 border border-green-300" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-300" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 border border-red-300" role="alert">
+                <p class="font-medium mb-1">Se encontraron los siguientes errores:</p>
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @yield('contenido')
+        {{-- PIE DE PÁGINA --}}
+        <footer class="mt-8 py-4 border-t border-gray-200 text-center text-sm text-gray-500">
+            © {{ date('Y') }} Sistema de Bancos de Ropa — Panel Administrativo
+        </footer>
+    </div>
+
+</body>
+</html>

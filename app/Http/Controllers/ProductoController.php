@@ -6,6 +6,8 @@ use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class ProductoController extends Controller
 {
@@ -17,12 +19,20 @@ class ProductoController extends Controller
 
     public function create()
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $categorias = Categoria::orderBy('nombre')->get();
         return view('admin.productos.form', ['producto' => null, 'categorias' => $categorias]);
     }
 
     public function store(Request $request)
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $validated = $request->validate($this->reglas(), $this->mensajes());
 
         $usuarioId = Usuario::whereHas('rol', fn ($q) => $q->where('nombre', 'administrador'))->value('id')
@@ -58,6 +68,10 @@ class ProductoController extends Controller
 
     public function edit($id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $producto = Producto::find($id);
 
         if (!$producto) {
@@ -70,6 +84,10 @@ class ProductoController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $producto = Producto::find($id);
 
         if (!$producto) {
@@ -96,6 +114,10 @@ class ProductoController extends Controller
 
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros.');
+        }
+
         $producto = Producto::find($id);
 
         if (!$producto) {
@@ -115,6 +137,10 @@ class ProductoController extends Controller
 
     public function restaurar($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para restaurar registros.');
+        }
+
         $producto = Producto::onlyTrashed()->find($id);
 
         if (!$producto) {
@@ -128,6 +154,10 @@ class ProductoController extends Controller
 
     public function forceDestroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros de forma definitiva.');
+        }
+
         $producto = Producto::onlyTrashed()->find($id);
 
         if (!$producto) {

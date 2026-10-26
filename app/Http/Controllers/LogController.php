@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Log as LogModel;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class LogController extends Controller
 {
@@ -16,12 +18,20 @@ class LogController extends Controller
 
     public function create()
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $usuarios = Usuario::orderBy('nombre')->get();
         return view('admin.logs.form', ['log' => null, 'usuarios' => $usuarios]);
     }
 
     public function store(Request $request)
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $validated = $request->validate($this->reglas(), $this->mensajes());
 
         LogModel::create([
@@ -47,6 +57,10 @@ class LogController extends Controller
 
     public function edit($id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $log = LogModel::find($id);
 
         if (!$log) {
@@ -59,6 +73,10 @@ class LogController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $log = LogModel::find($id);
 
         if (!$log) {
@@ -79,6 +97,10 @@ class LogController extends Controller
 
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros.');
+        }
+
         $log = LogModel::find($id);
 
         if (!$log) {
@@ -98,6 +120,10 @@ class LogController extends Controller
 
     public function restaurar($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para restaurar registros.');
+        }
+
         $log = LogModel::onlyTrashed()->find($id);
 
         if (!$log) {
@@ -111,6 +137,10 @@ class LogController extends Controller
 
     public function forceDestroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros de forma definitiva.');
+        }
+
         $log = LogModel::onlyTrashed()->find($id);
 
         if (!$log) {

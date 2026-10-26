@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class RolController extends Controller
 {
@@ -16,11 +18,19 @@ class RolController extends Controller
 
     public function create()
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         return view('admin.roles.form', ['rol' => null]);
     }
 
     public function store(Request $request)
     {
+        if (Gate::denies('crear-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para crear registros.');
+        }
+
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'min:3', 'max:50', 'unique:roles,nombre'],
         ], $this->mensajes());
@@ -43,6 +53,10 @@ class RolController extends Controller
 
     public function edit($id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $rol = Rol::find($id);
 
         if (!$rol) {
@@ -54,6 +68,10 @@ class RolController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Gate::denies('editar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para editar registros.');
+        }
+
         $rol = Rol::find($id);
 
         if (!$rol) {
@@ -72,6 +90,10 @@ class RolController extends Controller
     // Borrado lógico
     public function destroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros.');
+        }
+
         $rol = Rol::find($id);
 
         if (!$rol) {
@@ -91,6 +113,10 @@ class RolController extends Controller
 
     public function restaurar($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para restaurar registros.');
+        }
+
         $rol = Rol::onlyTrashed()->find($id);
 
         if (!$rol) {
@@ -105,6 +131,10 @@ class RolController extends Controller
     // Borrado físico (solo si ya está en la papelera)
     public function forceDestroy($id)
     {
+        if (Gate::denies('eliminar-registros', Auth::guard('admin')->user())) {
+            abort(403, 'No tienes autorización para eliminar registros de forma definitiva.');
+        }
+
         $rol = Rol::onlyTrashed()->withCount('usuarios')->find($id);
 
         if (!$rol) {
