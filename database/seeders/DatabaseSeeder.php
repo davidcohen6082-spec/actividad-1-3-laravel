@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OrdenSeeder::class,
             OrdenDetalleSeeder::class,
             LogSeeder::class,
+            ClienteSeeder::class,
         ]);
     }
 }

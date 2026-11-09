@@ -6,40 +6,30 @@ use App\Models\Administrador;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Cuentas de PRUEBA (no son credenciales reales). Una por nivel de autorización.
+ */
 class AdministradorSeeder extends Seeder
 {
     public function run(): void
     {
-        Administrador::create([
-            'nombre_completo' => 'David Cohen',
-            'usuario' => 'admin',
-            'password' => Hash::make('admin1234'),
-            'activo' => true,
-            'nivel' => 3,
-        ]);
+        $cuentas = [
+            ['David Cohen', 'admin', 'admin1234', true, 3],
+            ['Administrador Nivel 2', 'nivel2', 'nivel2123', true, 2],
+            ['Administrador Nivel 1', 'nivel1', 'nivel1123', true, 1],
+            ['Administrador Inactivo', 'inactivo', 'inactivo1234', false, 1],
+        ];
 
-        Administrador::create([
-            'nombre_completo' => 'Administrador Nivel 2',
-            'usuario' => 'nivel2',
-            'password' => Hash::make('nivel2123'),
-            'activo' => true,
-            'nivel' => 2,
-        ]);
-
-        Administrador::create([
-            'nombre_completo' => 'Administrador Nivel 1',
-            'usuario' => 'nivel1',
-            'password' => Hash::make('nivel1123'),
-            'activo' => true,
-            'nivel' => 1,
-        ]);
-
-        Administrador::create([
-            'nombre_completo' => 'Administrador Inactivo',
-            'usuario' => 'inactivo',
-            'password' => Hash::make('inactivo1234'),
-            'activo' => false,
-            'nivel' => 1,
-        ]);
+        foreach ($cuentas as [$nombre, $usuario, $password, $activo, $nivel]) {
+            Administrador::updateOrCreate(
+                ['usuario' => $usuario],
+                [
+                    'nombre_completo' => $nombre,
+                    'password' => Hash::make($password),
+                    'activo' => $activo,
+                    'nivel' => $nivel,
+                ]
+            );
+        }
     }
 }
