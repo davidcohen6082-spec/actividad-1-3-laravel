@@ -16,6 +16,8 @@ class Usuario extends Authenticatable
         'proveedor_social', 'social_id', 'fecha_registro', 'foto',
     ];
 
+    protected $casts = ['activo' => 'boolean'];
+
     // Nunca se exponen en las respuestas JSON.
     protected $hidden = ['password_hash', 'social_id'];
 

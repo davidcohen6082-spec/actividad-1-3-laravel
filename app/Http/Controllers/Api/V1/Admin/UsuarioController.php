@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Http\Requests\Admin\CambiarEstadoUsuarioRequest;
+use App\Http\Resources\Admin\UsuarioAdminResource;
+use App\Models\Administrador;
 use App\Models\Orden;
 use App\Models\Producto;
 use App\Models\Usuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class UsuarioController extends RecursoController
@@ -40,6 +45,94 @@ class UsuarioController extends RecursoController
     protected function ordenables(): array
     {
         return ['id', 'nombre', 'email', 'fecha_registro'];
+    }
+
+    /**
+     * GET /api/v1/admin/usuarios — listado general: clientes y administradores.
+     * Filtros: ?tipo=todos|cliente|administrador, ?activo=true|false, ?buscar=, ?per_page=, ?page=
+     */
+    public function index(Request $request)
+    {
+        $this->permitir($request, 'ver-registros');
+
+        $tipo = $request->query('tipo', 'todos');
+        $buscar = trim((string) $request->query('buscar', ''));
+        $activo = $request->has('activo') ? $request->boolean('activo') : null;
+        $usuarios = collect();
+
+        if (in_array($tipo, ['todos', 'cliente'], true)) {
+            $usuarios = $usuarios->concat(
+                Usuario::with('rol')
+                    ->when($buscar !== '', fn ($q) => $q->where(fn ($d) => $d->where('nombre', 'like', "%{$buscar}%")->orWhere('email', 'like', "%{$buscar}%")))
+                    ->when($activo !== null, fn ($q) => $q->where('activo', $activo))
+                    ->get()
+            );
+        }
+
+        if (in_array($tipo, ['todos', 'administrador'], true)) {
+            $usuarios = $usuarios->concat(
+                Administrador::query()
+                    ->when($buscar !== '', fn ($q) => $q->where(fn ($d) => $d->where('nombre_completo', 'like', "%{$buscar}%")->orWhere('usuario', 'like', "%{$buscar}%")))
+                    ->when($activo !== null, fn ($q) => $q->where('activo', $activo))
+                    ->get()
+            );
+        }
+
+        // Dos tablas distintas: se unen, se ordenan y se paginan en memoria (volumen pequeño).
+        $usuarios = $usuarios->sortBy(fn ($u) => mb_strtolower($u->nombre ?? $u->nombre_completo))->values();
+        $porPagina = $this->porPagina($request);
+        $pagina = max(1, (int) $request->query('page', 1));
+
+        $paginador = new LengthAwarePaginator(
+            $usuarios->forPage($pagina, $porPagina)->values(),
+            $usuarios->count(),
+            $porPagina,
+            $pagina,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return UsuarioAdminResource::collection($paginador);
+    }
+
+    /**
+     * PATCH /api/v1/admin/usuarios/{id}/estado — activa/desactiva una cuenta y/o cambia su rol (cliente)
+     * o nivel (administrador). Al desactivar se revocan todos sus tokens Sanctum.
+     */
+    public function estado(CambiarEstadoUsuarioRequest $request, $id)
+    {
+        $datos = $request->validated();
+        $esAdmin = $request->tipo() === 'administrador';
+
+        $cuenta = ctype_digit((string) $id)
+            ? ($esAdmin ? Administrador::find($id) : Usuario::find($id))
+            : null;
+
+        if (! $cuenta) {
+            return $this->error('El usuario solicitado no existe.', 404);
+        }
+
+        // Protección contra elevación de privilegios / bloqueo accidental.
+        if ($esAdmin && $cuenta->is($request->user())) {
+            return $this->error('No puedes cambiar el estado ni el nivel de tu propia cuenta.', 403);
+        }
+
+        $cambios = array_intersect_key($datos, array_flip(['activo', 'rol_id', 'nivel']));
+        $cuenta->forceFill($cambios)->save();
+
+        if (array_key_exists('activo', $cambios) && ! $cambios['activo']) {
+            $cuenta->tokens()->delete();
+        }
+
+        Log::info('[AUDITORIA ADMIN] usuario.estado', [
+            'tipo' => $request->tipo(),
+            'usuario_afectado_id' => $cuenta->id,
+            'cambios' => $cambios,
+            'administrador_id' => $request->user()->id,
+            'ip' => $request->ip(),
+        ]);
+
+        return (new UsuarioAdminResource($cuenta->load($esAdmin ? [] : ['rol'])))
+            ->additional(['message' => 'Estado de la cuenta actualizado correctamente.']);
     }
 
     protected function reglas(?Model $registro): array

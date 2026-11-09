@@ -240,7 +240,7 @@ class ApiV1Test extends TestCase
         $this->api('POST', 'admin/roles', ['nombre' => 'a'], $token)
             ->assertStatus(422)->assertJsonValidationErrors(['nombre']);
 
-        $this->api('POST', 'admin/productos', ['nombre' => 'Camisa', 'precio' => -5, 'stock' => 'muchos', 'condicion' => 'roto'], $token)
+        $this->api('POST', 'admin/recursos', ['nombre' => 'Camisa', 'precio' => -5, 'stock' => 'muchos', 'condicion' => 'roto'], $token)
             ->assertStatus(422)->assertJsonValidationErrors(['categoria_id', 'precio', 'stock', 'condicion']);
     }
 
@@ -249,13 +249,13 @@ class ApiV1Test extends TestCase
         $token = $this->tokenAdmin();
         $producto = Producto::first();
 
-        $this->api('PUT', "admin/productos/{$producto->id}", ['nombre' => 'Solo nombre'], $token)
+        $this->api('PUT', "admin/recursos/{$producto->id}", ['nombre' => 'Solo nombre'], $token)
             ->assertStatus(422)->assertJsonValidationErrors(['categoria_id', 'condicion', 'precio', 'stock']);
 
-        $this->api('PATCH', "admin/productos/{$producto->id}", ['stock' => 7], $token)
+        $this->api('PATCH', "admin/recursos/{$producto->id}", ['stock' => 7], $token)
             ->assertOk()->assertJsonPath('data.stock', 7)->assertJsonPath('data.nombre', $producto->nombre);
 
-        $this->api('PUT', "admin/productos/{$producto->id}", [
+        $this->api('PUT', "admin/recursos/{$producto->id}", [
             'nombre' => 'Reemplazado', 'categoria_id' => $producto->categoria_id, 'condicion' => 'nuevo', 'precio' => 99.5, 'stock' => 3,
         ], $token)->assertOk()->assertJsonPath('data.nombre', 'Reemplazado');
     }
@@ -266,7 +266,7 @@ class ApiV1Test extends TestCase
         $cliente = $this->tokenCliente();
 
         $this->api('GET', 'admin/roles/99999', [], $admin)->assertStatus(404)->assertJsonStructure(['message']);
-        $this->api('GET', 'admin/productos/99999', [], $admin)->assertStatus(404);
+        $this->api('GET', 'admin/recursos/99999', [], $admin)->assertStatus(404);
         $this->api('GET', 'productos/99999')->assertStatus(404);
         $this->api('GET', 'cliente/pedidos/99999', [], $cliente)->assertStatus(404);
         $this->api('GET', 'ruta/que/no/existe')->assertStatus(404);
@@ -282,7 +282,7 @@ class ApiV1Test extends TestCase
     {
         $token = $this->tokenAdmin();
 
-        $respuesta = $this->api('GET', 'admin/productos?per_page=3&ordenar=-precio&condicion=usado', [], $token)->assertOk();
+        $respuesta = $this->api('GET', 'admin/recursos?per_page=3&ordenar=-precio&condicion=usado', [], $token)->assertOk();
         $respuesta->assertJsonStructure(['data', 'links', 'meta']);
         $this->assertLessThanOrEqual(3, count($respuesta->json('data')));
 
@@ -320,7 +320,7 @@ class ApiV1Test extends TestCase
         $cliente = $this->tokenCliente();
 
         $this->api('GET', 'admin/roles', [], $cliente)->assertStatus(403);
-        $this->api('POST', 'admin/productos', ['nombre' => 'Hack'], $cliente)->assertStatus(403);
+        $this->api('POST', 'admin/recursos', ['nombre' => 'Hack'], $cliente)->assertStatus(403);
         $this->api('GET', 'admin/pedidos', [], $cliente)->assertStatus(403);
         $this->api('GET', 'admin/reportes/resumen', [], $cliente)->assertStatus(403);
     }

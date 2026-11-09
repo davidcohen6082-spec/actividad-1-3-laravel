@@ -55,6 +55,10 @@ class AuthController extends Controller
             return $this->error('Correo o contraseña incorrectos.', 401);
         }
 
+        if ($cliente->activo === false) {
+            return $this->error('Esta cuenta se encuentra deshabilitada.', 403);
+        }
+
         return $this->ok([
             'token_type' => 'Bearer',
             'token' => $cliente->createToken('api-cliente', ['cliente'])->plainTextToken,

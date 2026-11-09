@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Api\V1\Concerns\RespuestasApi;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AdminLoginRequest;
 use App\Models\Administrador;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,15 +13,9 @@ class AuthController extends Controller
 {
     use RespuestasApi;
 
-    public function login(Request $request)
+    public function login(AdminLoginRequest $request)
     {
-        $credenciales = $request->validate([
-            'usuario' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ], [
-            'usuario.required' => 'El usuario es obligatorio.',
-            'password.required' => 'La contraseña es obligatoria.',
-        ]);
+        $credenciales = $request->validated();
 
         $administrador = Administrador::where('usuario', $credenciales['usuario'])->first();
 
@@ -33,7 +28,7 @@ class AuthController extends Controller
         }
 
         // El token nace con la habilidad "admin": no sirve en las rutas del área cliente.
-        $token = $administrador->createToken('api-admin', ['admin'])->plainTextToken;
+        $token = $administrador->createToken('admin-token', ['admin'])->plainTextToken;
 
         return $this->ok([
             'token_type' => 'Bearer',

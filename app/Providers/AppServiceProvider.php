@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Models\Administrador;
 use App\Models\CarritoItem;
 use App\Models\ListaDeseo;
+use App\Models\Producto;
 use App\Models\Orden;
 use App\Policies\CarritoItemPolicy;
 use App\Policies\ListaDeseoPolicy;
 use App\Policies\OrdenPolicy;
+use App\Policies\ProductoAdminPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -40,12 +42,15 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('editar-registros', fn (Administrador $admin) => $admin->nivel >= 2);
         Gate::define('eliminar-registros', fn (Administrador $admin) => $admin->nivel >= 3);
         Gate::define('gestionar-administradores', fn (Administrador $admin) => $admin->nivel >= 3);
+        Gate::define('gestionar-usuarios', fn (Administrador $admin) => $admin->activo && $admin->nivel >= 3);
         Gate::define('gestionar-pedidos', fn (Administrador $admin) => $admin->nivel >= 2);
         Gate::define('ver-reportes', fn (Administrador $admin) => $admin->nivel >= 2);
 
         /*
          * POLICIES (reglas sobre un registro concreto del área cliente).
          */
+        // Actividad 4.3: recursos administrativos (productos) protegidos por Policy.
+        Gate::policy(Producto::class, ProductoAdminPolicy::class);
         Gate::policy(Orden::class, OrdenPolicy::class);
         Gate::policy(ListaDeseo::class, ListaDeseoPolicy::class);
         Gate::policy(CarritoItem::class, CarritoItemPolicy::class);

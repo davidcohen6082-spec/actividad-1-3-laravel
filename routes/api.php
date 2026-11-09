@@ -51,8 +51,12 @@ Route::prefix('v1')->group(function () {
             };
 
             $recurso('roles', Admin\RolController::class);
+            // Actividad 4.3: cambio de estado / rol de cualquier cuenta (cliente o administrador).
+            Route::patch('usuarios/{id}/estado', [Admin\UsuarioController::class, 'estado'])->whereNumber('id')->name('v1.admin.usuarios.estado');
             $recurso('usuarios', Admin\UsuarioController::class);
-            $recurso('productos', Admin\ProductoController::class);
+
+            // Actividad 4.3: recursos (artículos) con FormRequest, JsonResource y Policy. El listado incluye inactivos.
+            Route::apiResource('recursos', Admin\RecursoAdminController::class)->parameters(['recursos' => 'id'])->names('v1.admin.recursos');
             $recurso('categorias', Admin\CategoriaController::class, conPapelera: false);
             $recurso('logs', Admin\LogController::class);
 

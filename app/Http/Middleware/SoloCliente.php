@@ -23,6 +23,11 @@ class SoloCliente
             ], 403);
         }
 
+        // Cuenta desactivada desde el módulo administrativo: el token deja de servir.
+        if ($usuario->activo === false) {
+            return response()->json(['message' => 'Esta cuenta se encuentra deshabilitada.'], 403);
+        }
+
         return $next($request);
     }
 }

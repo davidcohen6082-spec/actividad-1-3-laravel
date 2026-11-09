@@ -1,0 +1,2346 @@
+{
+  "info": {
+    "_postman_id": "c37a2796-e976-4003-b293-7a537996b232",
+    "name": "Bancos de Ropa · API Admin 4.3 (Sanctum)",
+    "description": "Actividad 4.3 · Módulo administrativo /api/v1/admin. Ejecutar las carpetas en orden (Run collection). Cuentas de PRUEBA de los seeders; no hay credenciales reales en esta colección. Variable base_url: http://127.0.0.1:8000/api/v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. Preparación",
+      "description": "Obtiene datos auxiliares (categoría existente). No es parte de las evidencias.",
+      "item": [
+        {
+          "name": "0.1 Categorías públicas (obtener categoria_id)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "if (_.get(json, 'data.0.id') !== undefined) { pm.collectionVariables.set('categoria_id', _.get(json, 'data.0.id')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "Endpoint público del catálogo. Guarda una categoría existente en {{categoria_id}}.",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/categorias",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categorias"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Autenticación (Sanctum)",
+      "description": "Login administrativo, emisión de token Bearer y casos de rechazo.",
+      "item": [
+        {
+          "name": "1.1 Login administrador (nivel 3) → token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.token_type = \"Bearer\"', function () { pm.expect(_.get(json, 'data.token_type')).to.eql(\"Bearer\"); });",
+                  "pm.test('Existe data.token', function () { pm.expect(_.get(json, 'data.token')).to.not.be.undefined; });",
+                  "pm.test('data.administrador.nivel = 3', function () { pm.expect(_.get(json, 'data.administrador.nivel')).to.eql(3); });",
+                  "if (_.get(json, 'data.token') !== undefined) { pm.collectionVariables.set('token_admin', _.get(json, 'data.token')); }",
+                  "if (_.get(json, 'data.administrador.id') !== undefined) { pm.collectionVariables.set('admin_id', _.get(json, 'data.administrador.id')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Valida credenciales, comprueba que sea Administrador y emite createToken(\"admin-token\"). Guarda el Bearer Token en {{token_admin}}.",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"password\": \"admin1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.2 Perfil del administrador autenticado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.usuario = \"admin\"', function () { pm.expect(_.get(json, 'data.usuario')).to.eql(\"admin\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/perfil",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "perfil"
+              ]
+            }
+          }
+        },
+        {
+          "name": "1.3 Login con contraseña incorrecta → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"admin\",\n  \"password\": \"incorrecta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.4 Login sin datos → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.usuario', function () { pm.expect(_.get(json, 'errors.usuario')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.password', function () { pm.expect(_.get(json, 'errors.password')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.5 Login de cuenta inactiva → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"inactivo\",\n  \"password\": \"inactivo1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.6 Login nivel 1 (solo consulta) → token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "if (_.get(json, 'data.token') !== undefined) { pm.collectionVariables.set('token_nivel1', _.get(json, 'data.token')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"nivel1\",\n  \"password\": \"nivel1123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "1.7 Login nivel 2 (crea y edita) → token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "if (_.get(json, 'data.token') !== undefined) { pm.collectionVariables.set('token_nivel2', _.get(json, 'data.token')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"nivel2\",\n  \"password\": \"nivel2123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. CRUD de recursos (/admin/recursos)",
+      "description": "Operaciones completas con el token administrativo (200 / 201).",
+      "item": [
+        {
+          "name": "2.1 Listar recursos (incluye inactivos)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe data', function () { pm.expect(_.get(json, 'data')).to.not.be.undefined; });",
+                  "pm.test('Existe meta.total', function () { pm.expect(_.get(json, 'meta.total')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos?per_page=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.2 Crear recurso → 201",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('nombre_recurso', \"Recurso Postman \" + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 201', function () { pm.response.to.have.status(201); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('message = \"Recurso creado correctamente.\"', function () { pm.expect(_.get(json, 'message')).to.eql(\"Recurso creado correctamente.\"); });",
+                  "pm.test('data.activo = true', function () { pm.expect(_.get(json, 'data.activo')).to.eql(true); });",
+                  "pm.test('data.precio = 150.5', function () { pm.expect(_.get(json, 'data.precio')).to.eql(150.5); });",
+                  "if (_.get(json, 'data.id') !== undefined) { pm.collectionVariables.set('recurso_id', _.get(json, 'data.id')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"{{nombre_recurso}}\",\n  \"descripcion\": \"Prenda donada en buen estado\",\n  \"categoria_id\": {{categoria_id}},\n  \"condicion\": \"usado\",\n  \"talla\": \"M\",\n  \"precio\": 150.5,\n  \"stock\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2.3 Detalle del recurso",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.id coincide con {{recurso_id}}', function () { pm.expect(String(_.get(json, 'data.id'))).to.eql(String(pm.collectionVariables.get('recurso_id'))); });",
+                  "pm.test('Existe data.categoria.id', function () { pm.expect(_.get(json, 'data.categoria.id')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.4 Actualizar con PUT (reemplazo completo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.talla = \"L\"', function () { pm.expect(_.get(json, 'data.talla')).to.eql(\"L\"); });",
+                  "pm.test('data.stock = 6', function () { pm.expect(_.get(json, 'data.stock')).to.eql(6); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Recurso editado Postman {{$timestamp}}\",\n  \"descripcion\": \"Descripción actualizada\",\n  \"categoria_id\": {{categoria_id}},\n  \"condicion\": \"usado\",\n  \"talla\": \"L\",\n  \"precio\": 175,\n  \"stock\": 6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2.5 Actualizar parcialmente con PATCH",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.precio = 99.9', function () { pm.expect(_.get(json, 'data.precio')).to.eql(99.9); });",
+                  "pm.test('data.stock = 6', function () { pm.expect(_.get(json, 'data.stock')).to.eql(6); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio\": 99.9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2.6 Cambiar estado a inactivo (PATCH activo=false)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.activo = false', function () { pm.expect(_.get(json, 'data.activo')).to.eql(false); });",
+                  "pm.test('data.estado = \"inactivo\"', function () { pm.expect(_.get(json, 'data.estado')).to.eql(\"inactivo\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2.7 Listar solo inactivos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.0.activo = false', function () { pm.expect(_.get(json, 'data.0.activo')).to.eql(false); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos?estado=inactivos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "inactivos"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.8 Reactivar (PATCH activo=true)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.activo = true', function () { pm.expect(_.get(json, 'data.activo')).to.eql(true); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2.9 Eliminar (borrado lógico) → 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.eliminacion = \"logica\"', function () { pm.expect(_.get(json, 'data.eliminacion')).to.eql(\"logica\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.10 Eliminar definitivamente (?definitivo=true)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.eliminacion = \"definitiva\"', function () { pm.expect(_.get(json, 'data.eliminacion')).to.eql(\"definitiva\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "Limpieza: deja la base como estaba.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_id}}?definitivo=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_id}}"
+              ],
+              "query": [
+                {
+                  "key": "definitivo",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Usuarios (/admin/usuarios)",
+      "description": "Listado general y cambio de estado/rol.",
+      "item": [
+        {
+          "name": "3.1 Listar usuarios (clientes y administradores)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe data.0.tipo', function () { pm.expect(_.get(json, 'data.0.tipo')).to.not.be.undefined; });",
+                  "pm.test('Existe data.0.estado', function () { pm.expect(_.get(json, 'data.0.estado')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios?per_page=50",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "per_page",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.2 Listar solo clientes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.0.tipo = \"cliente\"', function () { pm.expect(_.get(json, 'data.0.tipo')).to.eql(\"cliente\"); });",
+                  "if (_.get(json, 'data.0.id') !== undefined) { pm.collectionVariables.set('cliente_id', _.get(json, 'data.0.id')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "Guarda en {{cliente_id}} el id del primer cliente.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios?tipo=cliente&per_page=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "cliente"
+                },
+                {
+                  "key": "per_page",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.3 Desactivar cliente (PATCH …/estado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.estado = \"inactivo\"', function () { pm.expect(_.get(json, 'data.estado')).to.eql(\"inactivo\"); });",
+                  "pm.test('data.tipo = \"cliente\"', function () { pm.expect(_.get(json, 'data.tipo')).to.eql(\"cliente\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/{{cliente_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "{{cliente_id}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"cliente\",\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.4 Reactivar cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('data.estado = \"activo\"', function () { pm.expect(_.get(json, 'data.estado')).to.eql(\"activo\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/{{cliente_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "{{cliente_id}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"cliente\",\n  \"activo\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.5 Cambiar estado sin campos → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.cuerpo', function () { pm.expect(_.get(json, 'errors.cuerpo')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/{{cliente_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "{{cliente_id}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.6 Usuario inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/999999/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "999999",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3.7 Modificar la propia cuenta → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/{{admin_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "{{admin_id}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"administrador\",\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Errores 401 / 403 / 404 / 422",
+      "description": "Pruebas negativas de seguridad y validación.",
+      "item": [
+        {
+          "name": "4.0 Preparación: leer un recurso existente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "if (_.get(json, 'data.0.id') !== undefined) { pm.collectionVariables.set('recurso_base_id', _.get(json, 'data.0.id')); }",
+                  "if (_.get(json, 'data.0.nombre') !== undefined) { pm.collectionVariables.set('nombre_dup', _.get(json, 'data.0.nombre')); }",
+                  "if (_.get(json, 'data.0.categoria.id') !== undefined) { pm.collectionVariables.set('categoria_dup', _.get(json, 'data.0.categoria.id')); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "Guarda id, nombre y categoría de un recurso existente para las pruebas negativas.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos?estado=activos&per_page=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "activos"
+                },
+                {
+                  "key": "per_page",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.1 Listar recursos SIN token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.2 Crear recurso SIN token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Sin token\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.3 Token inválido → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_falso}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.4 Usuarios SIN token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.5 Nivel 1 intenta crear → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_nivel1}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"No permitido\",\n  \"categoria_id\": {{categoria_id}},\n  \"condicion\": \"usado\",\n  \"precio\": 10,\n  \"stock\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.6 Nivel 2 intenta eliminar → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_nivel2}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_base_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_base_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4.7 Nivel 2 intenta cambiar estado de usuario → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 403', function () { pm.response.to.have.status(403); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_nivel2}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/usuarios/{{cliente_id}}/estado",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "usuarios",
+                "{{cliente_id}}",
+                "estado"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"activo\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.8 Datos inválidos al crear → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.nombre', function () { pm.expect(_.get(json, 'errors.nombre')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.categoria_id', function () { pm.expect(_.get(json, 'errors.categoria_id')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.condicion', function () { pm.expect(_.get(json, 'errors.condicion')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.precio', function () { pm.expect(_.get(json, 'errors.precio')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.stock', function () { pm.expect(_.get(json, 'errors.stock')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"ab\",\n  \"categoria_id\": 99999,\n  \"condicion\": \"roto\",\n  \"precio\": -5,\n  \"stock\": \"muchos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.9 PUT incompleto → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.precio', function () { pm.expect(_.get(json, 'errors.precio')).to.not.be.undefined; });",
+                  "pm.test('Existe errors.stock', function () { pm.expect(_.get(json, 'errors.stock')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_base_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_base_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Solo nombre\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.10 PATCH con valor nulo → 422 (no sobrescribe)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.nombre', function () { pm.expect(_.get(json, 'errors.nombre')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/{{recurso_base_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "{{recurso_base_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.11 Nombre duplicado en la categoría → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 422', function () { pm.response.to.have.status(422); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe errors.nombre', function () { pm.expect(_.get(json, 'errors.nombre')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Usa el nombre y la categoría de un recurso ya existente (ver script previo).",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"{{nombre_dup}}\",\n  \"categoria_id\": {{categoria_dup}},\n  \"condicion\": \"usado\",\n  \"precio\": 10,\n  \"stock\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "4.12 Recurso inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 404', function () { pm.response.to.have.status(404); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos",
+                "999999"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Logout (revocación del token)",
+      "description": "Cierre de sesión y comprobación de que el token revocado ya no sirve.",
+      "item": [
+        {
+          "name": "5.1 Logout (revoca el token actual)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 200', function () { pm.response.to.have.status(200); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.2 Usar el token revocado → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}",
+                  "pm.test('Existe message', function () { pm.expect(_.get(json, 'message')).to.not.be.undefined; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/recursos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "recursos"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.3 Perfil con el token revocado → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Código de estado 401', function () { pm.response.to.have.status(401); });",
+                  "pm.test('La respuesta es JSON', function () { pm.response.to.be.json; });",
+                  "let json = {}; try { json = pm.response.json(); } catch (e) {}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_admin}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/admin/perfil",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "perfil"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "token_falso",
+      "value": "token-invalido-123"
+    },
+    {
+      "key": "token_admin",
+      "value": ""
+    },
+    {
+      "key": "token_nivel1",
+      "value": ""
+    },
+    {
+      "key": "token_nivel2",
+      "value": ""
+    },
+    {
+      "key": "categoria_id",
+      "value": ""
+    },
+    {
+      "key": "recurso_id",
+      "value": ""
+    },
+    {
+      "key": "recurso_base_id",
+      "value": ""
+    },
+    {
+      "key": "cliente_id",
+      "value": ""
+    },
+    {
+      "key": "admin_id",
+      "value": ""
+    },
+    {
+      "key": "nombre_recurso",
+      "value": ""
+    },
+    {
+      "key": "nombre_dup",
+      "value": ""
+    },
+    {
+      "key": "categoria_dup",
+      "value": ""
+    }
+  ]
+}
