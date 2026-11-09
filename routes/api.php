@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Api\V1\CatalogoController;
+use App\Http\Controllers\Api\V1\Client;
 use App\Http\Controllers\Api\V1\Cliente;
 use Illuminate\Support\Facades\Route;
 
@@ -70,7 +71,28 @@ Route::prefix('v1')->group(function () {
         });
     });
 
-    // ----------------------------------------------------------------- ÁREA CLIENTE
+    // ------------------------------------------------- ÁREA CLIENTE · Actividad 4.4 (/api/v1/client)
+    Route::prefix('client')->group(function () {
+        // Públicas
+        Route::get('catalogo', [CatalogoController::class, 'productos'])->name('v1.client.catalogo');
+        Route::get('catalogo/{id}', [CatalogoController::class, 'producto'])->whereNumber('id')->name('v1.client.catalogo.show');
+        Route::post('register', [Client\AuthController::class, 'register'])->middleware('throttle:auth-api')->name('v1.client.register');
+        Route::post('login', [Client\AuthController::class, 'login'])->middleware('throttle:auth-api')->name('v1.client.login');
+
+        // Privadas: token Sanctum con habilidad "cliente". La propiedad de los datos la
+        // garantizan el Eloquent Scope (listas) y la OrdenPolicy (acciones sobre un registro).
+        Route::middleware(['auth:sanctum', 'solo.cliente'])->group(function () {
+            Route::post('logout', [Client\AuthController::class, 'logout'])->name('v1.client.logout');
+
+            Route::get('perfil', [Client\PerfilController::class, 'show'])->name('v1.client.perfil.show');
+            Route::match(['put', 'patch'], 'perfil', [Client\PerfilController::class, 'update'])->name('v1.client.perfil.update');
+
+            Route::apiResource('mis-registros', Client\RegistroController::class)
+                ->parameters(['mis-registros' => 'id'])->names('v1.client.registros');
+        });
+    });
+
+    // ----------------------------------------------------------------- ÁREA CLIENTE (4.1)
     Route::prefix('cliente')->group(function () {
         Route::post('registro', [Cliente\AuthController::class, 'registro'])->middleware('throttle:auth-api')->name('v1.cliente.registro');
         Route::post('login', [Cliente\AuthController::class, 'login'])->middleware('throttle:auth-api')->name('v1.cliente.login');
