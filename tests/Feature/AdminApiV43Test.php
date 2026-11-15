@@ -90,7 +90,8 @@ class AdminApiV43Test extends TestCase
     public function test_rutas_admin_sin_token_devuelven_401(): void
     {
         $rutas = [
-            ['GET', 'admin/recursos'], ['GET', 'admin/recursos/1'], ['POST', 'admin/recursos'],
+            // 5.1: GET admin/recursos y GET admin/recursos/{id} están abiertos TEMPORALMENTE (ver Cliente51Test).
+            ['POST', 'admin/recursos'],
             ['PUT', 'admin/recursos/1'], ['PATCH', 'admin/recursos/1'], ['DELETE', 'admin/recursos/1'],
             ['GET', 'admin/usuarios'], ['PATCH', 'admin/usuarios/1/estado'], ['POST', 'admin/logout'],
         ];
@@ -102,7 +103,7 @@ class AdminApiV43Test extends TestCase
 
     public function test_token_invalido_devuelve_401(): void
     {
-        $this->api('GET', 'admin/recursos', [], 'token-falso-123')->assertStatus(401);
+        $this->api('GET', 'admin/perfil', [], 'token-falso-123')->assertStatus(401);
     }
 
     public function test_token_expirado_devuelve_401(): void
@@ -111,7 +112,7 @@ class AdminApiV43Test extends TestCase
         $this->api('GET', 'admin/recursos', [], $token)->assertOk();
 
         Carbon::setTestNow(now()->addMinutes(config('sanctum.expiration') + 1));
-        $this->api('GET', 'admin/recursos', [], $token)->assertStatus(401);
+        $this->api('GET', 'admin/perfil', [], $token)->assertStatus(401);
         Carbon::setTestNow();
     }
 
@@ -122,7 +123,7 @@ class AdminApiV43Test extends TestCase
         $this->api('GET', 'admin/recursos', [], $token)->assertOk();
         $this->api('POST', 'admin/logout', [], $token)->assertOk();
         $this->assertDatabaseCount('personal_access_tokens', 0);
-        $this->api('GET', 'admin/recursos', [], $token)->assertStatus(401);
+        $this->api('GET', 'admin/perfil', [], $token)->assertStatus(401);
     }
 
     public function test_logout_solo_revoca_el_token_actual(): void
@@ -131,7 +132,7 @@ class AdminApiV43Test extends TestCase
         $b = $this->login();
 
         $this->api('POST', 'admin/logout', [], $a)->assertOk();
-        $this->api('GET', 'admin/recursos', [], $a)->assertStatus(401);
+        $this->api('GET', 'admin/perfil', [], $a)->assertStatus(401);
         $this->api('GET', 'admin/recursos', [], $b)->assertOk();
     }
 
@@ -139,7 +140,7 @@ class AdminApiV43Test extends TestCase
     {
         $cliente = $this->api('POST', 'cliente/login', ['email' => 'cliente1@example.com', 'password' => 'cliente123'])->json('data.token');
 
-        $this->api('GET', 'admin/recursos', [], $cliente)->assertStatus(403);
+        $this->api('GET', 'admin/perfil', [], $cliente)->assertStatus(403);
         $this->api('GET', 'admin/usuarios', [], $cliente)->assertStatus(403);
         $this->api('PATCH', 'admin/usuarios/1/estado', ['activo' => false], $cliente)->assertStatus(403);
     }
@@ -377,7 +378,7 @@ class AdminApiV43Test extends TestCase
 
         Administrador::where('usuario', 'nivel2')->update(['activo' => false]);
 
-        $this->api('GET', 'admin/recursos', [], $token)->assertStatus(403);
+        $this->api('GET', 'admin/perfil', [], $token)->assertStatus(403);
     }
 
     // ============================================================ 5. USUARIOS
@@ -445,7 +446,7 @@ class AdminApiV43Test extends TestCase
 
         $this->api('PATCH', "admin/usuarios/{$n2->id}/estado", ['tipo' => 'administrador', 'activo' => false], $token)->assertOk();
 
-        $this->api('GET', 'admin/recursos', [], $tokenN2)->assertStatus(401);
+        $this->api('GET', 'admin/perfil', [], $tokenN2)->assertStatus(401);
         $this->api('POST', 'admin/login', ['usuario' => 'nivel2', 'password' => 'nivel2123'])->assertStatus(403);
     }
 

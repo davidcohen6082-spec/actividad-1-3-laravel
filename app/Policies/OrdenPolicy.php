@@ -6,14 +6,6 @@ use App\Models\Orden;
 use App\Models\Usuario;
 use Illuminate\Auth\Access\Response;
 
-/**
- * Actividad 4.4 · Autorización de DATOS PROPIOS (Self-Data Ownership).
- *
- * Todas las reglas comparan la identidad del usuario autenticado por Sanctum ($usuario->id,
- * leída del token en el servidor) con el propietario del registro ($orden->usuario_id).
- * En este proyecto la columna propietaria se llama usuario_id (equivale a user_id).
- * El identificador que llega en la URL NO prueba propiedad: siempre se comprueba aquí.
- */
 class OrdenPolicy
 {
     /** Consultar: solo el propietario. */

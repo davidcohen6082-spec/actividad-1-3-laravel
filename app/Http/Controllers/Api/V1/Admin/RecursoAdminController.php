@@ -27,7 +27,10 @@ class RecursoAdminController extends Controller
 
     public function index(Request $request)
     {
-        $this->permitirSobre($request, 'viewAny', Producto::class);
+        // TEMPORAL 5.1: sin token no hay usuario y la consulta es abierta; con token se aplica la Policy.
+        if ($request->user()) {
+            $this->permitirSobre($request, 'viewAny', Producto::class);
+        }
 
         $consulta = Producto::withTrashed()->with(['categoria', 'usuario']);
 
@@ -60,7 +63,9 @@ class RecursoAdminController extends Controller
 
     public function show(Request $request, $id)
     {
-        $this->permitirSobre($request, 'view', Producto::class);
+        if ($request->user()) { // TEMPORAL 5.1
+            $this->permitirSobre($request, 'view', Producto::class);
+        }
 
         $recurso = ctype_digit((string) $id) ? Producto::withTrashed()->with(['categoria', 'usuario'])->find($id) : null;
 

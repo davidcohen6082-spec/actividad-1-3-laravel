@@ -33,6 +33,19 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:auth-api')
             ->name('v1.admin.login');
 
+        // ============================================================================================
+        // TEMPORAL · ACTIVIDAD 5.1 (consumo de la API desde el cliente frontend, versión 1)
+        // Se COMENTA la protección por token Sanctum SOLO en las dos rutas de consulta del recurso
+        // para probar la integración sin encabezado Authorization. Las rutas de escritura
+        // (POST, PUT, PATCH, DELETE), usuarios, pedidos y reportes siguen protegidas más abajo.
+        // >>> RESTAURAR AL TERMINAR LA FASE: descomenta el grupo y mueve estas rutas dentro. <<<
+        // ============================================================================================
+        // Route::middleware(['auth:sanctum', 'solo.admin'])->group(function () {
+            Route::get('recursos', [Admin\RecursoAdminController::class, 'index'])->name('v1.admin.recursos.index');
+            Route::get('recursos/{id}', [Admin\RecursoAdminController::class, 'show'])->name('v1.admin.recursos.show');
+        // });
+        // ============================================================================================
+
         Route::middleware(['auth:sanctum', 'solo.admin'])->group(function () {
             Route::get('perfil', [Admin\AuthController::class, 'perfil'])->name('v1.admin.perfil');
             Route::post('logout', [Admin\AuthController::class, 'logout'])->name('v1.admin.logout');
@@ -57,7 +70,10 @@ Route::prefix('v1')->group(function () {
             $recurso('usuarios', Admin\UsuarioController::class);
 
             // Actividad 4.3: recursos (artículos) con FormRequest, JsonResource y Policy. El listado incluye inactivos.
-            Route::apiResource('recursos', Admin\RecursoAdminController::class)->parameters(['recursos' => 'id'])->names('v1.admin.recursos');
+            // 5.1: index y show salen de este grupo protegido (ver bloque TEMPORAL más abajo).
+            Route::apiResource('recursos', Admin\RecursoAdminController::class)
+                ->except(['index', 'show'])
+                ->parameters(['recursos' => 'id'])->names('v1.admin.recursos');
             $recurso('categorias', Admin\CategoriaController::class, conPapelera: false);
             $recurso('logs', Admin\LogController::class);
 

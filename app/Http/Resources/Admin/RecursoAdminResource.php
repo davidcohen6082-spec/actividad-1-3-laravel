@@ -23,6 +23,8 @@ class RecursoAdminResource extends JsonResource
             'precio' => (float) $this->precio,
             'stock' => (int) $this->stock,
             'imagen_url' => $this->imagen ? url($this->imagen) : null,
+            // Galería: hoy cada recurso guarda una imagen; el arreglo permite crecer a varias sin cambiar el cliente.
+            'imagenes' => $this->imagen ? [url($this->imagen)] : [],
             'activo' => $this->deleted_at === null,
             'estado' => $this->deleted_at === null ? 'activo' : 'inactivo',
             'categoria' => $this->whenLoaded('categoria', fn () => $this->categoria
